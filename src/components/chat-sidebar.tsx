@@ -38,10 +38,10 @@ export const ChatSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader>
-        <h2 className="text-2xl font-bold text-center">Zist AI</h2>
+        <h2 className="text-2xl font-bold text-center py-3">Zist AI</h2>
         <Button className="bg-blue-600">New Chat</Button>
       </SidebarHeader>
-      <SidebarContent className="p-2">
+      <SidebarContent className="p-2 pt-6">
         <SidebarGroupLabel>Data Sources</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
