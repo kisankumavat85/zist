@@ -12,9 +12,9 @@ const ChatLayout = (props: Props) => {
   return (
     <SidebarProvider>
       <ChatSidebar />
-      <div>
+      <div className="w-full">
         <Header />
-        <main className="p-4">{children}</main>
+        <main className="p-4 h-[100% - 61px]">{children}</main>
       </div>
     </SidebarProvider>
   );
