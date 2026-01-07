@@ -1,7 +1,7 @@
 "use client";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { Paperclip, Send } from "lucide-react";
+import { Paperclip, Plus, Send } from "lucide-react";
 import { Card } from "./ui/card";
 import { useRef } from "react";
 
@@ -15,7 +15,7 @@ const PromptInput = () => {
   };
 
   return (
-    <Card className="max-w-180 w-180 p-6 gap-2">
+    <Card className="w-full p-6 gap-2">
       <Textarea
         className="text-2xl resize-none"
         placeholder="Ask anything about files"
@@ -32,7 +32,7 @@ const PromptInput = () => {
           }}
         />
         <Button variant="outline" onClick={handleAddFileClick}>
-          <Paperclip /> Add files
+          <Plus /> Select files
         </Button>
         <Button size="icon">
           <Send />

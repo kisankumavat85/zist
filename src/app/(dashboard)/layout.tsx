@@ -7,17 +7,19 @@ type Props = {
   children: React.ReactNode;
 };
 
-const ChatLayout = (props: Props) => {
+const DashboardLayout = (props: Props) => {
   const { children } = props;
   return (
     <SidebarProvider>
       <ChatSidebar />
-      <div className="w-full">
+      <div className="w-full flex flex-col">
         <Header />
-        <main className="p-4 h-[100% - 61px]">{children}</main>
+        <main className="flex-1 self-center w-180 p-4">
+          {children}
+        </main>
       </div>
     </SidebarProvider>
   );
 };
 
-export default ChatLayout;
+export default DashboardLayout;
