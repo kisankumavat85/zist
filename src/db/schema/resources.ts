@@ -1,7 +1,7 @@
 import { pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 import { timestamps } from "./column-helpers";
 
-const statusEnum = pgEnum("status", [
+export const statusEnum = pgEnum("status", [
   "queued",
   "processing",
   "ready",

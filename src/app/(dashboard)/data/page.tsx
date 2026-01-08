@@ -1,5 +1,6 @@
 "use client";
 
+import { uploadResource } from "@/actions/resources";
 import { FileInput } from "@/components/file-input";
 import { StatusIndictor } from "@/components/status-indicator";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
+import { toast } from "sonner";
+
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
 const dummyDataList = [
   {
@@ -54,27 +58,78 @@ const dummyDataList = [
 ] as const;
 
 const DataPage = () => {
-  const [fileId, setFileId] = useState<string | null>(null);
+  const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileSelect = (id: string) => {
     console.log(id);
-    setFileId((prevId) => (prevId === id ? null : id));
+    setSelectedFileId((prevId) => (prevId === id ? null : id));
+  };
+
+  const handleFileChange = (file: File | null) => {
+    if (!file) {
+      setFileError("");
+      return;
+    }
+
+    if (file.type !== "application/pdf") {
+      setFileError("File type is not PDF");
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setFileError("File size is too big");
+      return;
+    }
+    setFileError("");
+    setFile(file);
+  };
+
+  const onUploadClick = async (file: File) => {
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("resource", file);
+    const result = await uploadResource(formData);
+
+    if (result.success) {
+      setFile(null);
+      toast.success("File uploaded successfully");
+    } else {
+      toast.error(result.message);
+    }
+
+    setIsUploading(false);
   };
 
   return (
     <div className="flex flex-col gap-8 text-purple-500-500">
-      <FileInput />
+      <FileInput
+        onFileChange={handleFileChange}
+        file={file}
+        error={fileError}
+        maxSize={MAX_FILE_SIZE}
+        actions={({ file }) => (
+          <Button
+            disabled={!file || !!fileError || isUploading}
+            onClick={() => file && onUploadClick(file)}
+          >
+            Upload
+          </Button>
+        )}
+      />
       <div>
         <div className="mb-4 flex items-center justify-between">
           <h2 id="uploaded-files" className="text-2xl font-semibold">
             Uploaded Files ({dummyDataList.length})
           </h2>
-          <Button disabled={!fileId}>Use File</Button>
+          <Button disabled={!selectedFileId}>Use File</Button>
         </div>
         <RadioGroup
           className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-4"
           onValueChange={handleFileSelect}
-          value={fileId}
+          value={selectedFileId}
         >
           {dummyDataList.map((item) => (
             <Label key={item.fileName} className="block" htmlFor={item.id}>
@@ -89,7 +144,7 @@ const DataPage = () => {
                       <RadioGroupItem
                         value={item.id}
                         id={item.id}
-                        checked={Boolean(item.id === fileId)}
+                        checked={Boolean(item.id === selectedFileId)}
                       />
                     )}
                   </CardAction>

@@ -1,20 +1,41 @@
 "use client";
 
 import clsx from "clsx";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { FileUp, Trash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { formatBytes } from "@/utils/file";
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-export const FileInput = () => {
+type Props = {
+  onFileChange: (file: File | null) => void;
+  file: File | null;
+  error?: string;
+  accept?: string;
+  maxSize?: number;
+  actions?: (args: { file: File | null; error?: string }) => React.ReactNode;
+};
+
+export const FileInput = (props: Props) => {
+  const {
+    onFileChange,
+    file,
+    error,
+    accept,
+    maxSize = MAX_FILE_SIZE,
+    actions,
+  } = props;
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(file || null);
 
-  const onFileInoutClick = () => {
+  useEffect(() => {
+    setSelectedFile(file);
+  }, [file]);
+
+  const onFileInputClick = () => {
     if (inputRef.current) {
       inputRef.current.click();
     }
@@ -23,11 +44,17 @@ export const FileInput = () => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const file = e.target.files[0];
-    setFile(file);
+    setSelectedFile(file);
+    onFileChange(file);
   };
 
-  const fileSize = file?.size && formatBytes(file.size);
-  const fileError = Boolean(file?.size && file.size > MAX_FILE_SIZE);
+  const onFileDelete = () => {
+    setSelectedFile(null);
+    onFileChange(null);
+  };
+
+  const fileSize = selectedFile?.size && formatBytes(selectedFile.size);
+  const maxFileSize = formatBytes(maxSize);
 
   return (
     <Card className="shadow-none">
@@ -43,32 +70,40 @@ export const FileInput = () => {
           id="file-input"
           className="hidden"
           onChange={handleFileChange}
+          accept={accept}
         />
         <div
-          className="h-28 flex items-center justify-center border border-secondary-foreground border-dashed rounded-xl bg-secondary"
-          onClick={onFileInoutClick}
+          className={clsx(
+            "h-28 flex items-center justify-center border  border-dashed rounded-xl",
+            {
+              "border-secondary-foreground bg-secondary": !error,
+              "border-red-400 bg-red-50": error,
+            }
+          )}
+          onClick={onFileInputClick}
         >
           <div className="flex flex-col items-center">
             <FileUp />
-            <p>{file && file.name ? file.name : "Click here to select file"}</p>
+            <p>
+              {selectedFile && selectedFile.name
+                ? selectedFile.name
+                : "Click here to select file"}
+            </p>
             <p className="text-[14px]">{fileSize && fileSize}</p>
           </div>
         </div>
         <div className="h-8 flex items-center justify-between">
-          <p
-            className={clsx("text-[14px] text-gray-400", {
-              "text-red-500": fileError,
-            })}
-          >
-            Maximum size: 2.0MB
-          </p>
-          {file && (
-            <Button variant="ghost" onClick={() => setFile(null)}>
+          <div>
+            <p className="text-sm text-gray-400">Maximum size: {maxFileSize}</p>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </div>
+          {selectedFile && (
+            <Button variant="ghost" onClick={onFileDelete}>
               <Trash className="text-red-500" />
             </Button>
           )}
         </div>
-        <Button disabled={!file || fileError}>Upload</Button>
+        {actions && actions({ file, error })}
       </CardContent>
     </Card>
   );
