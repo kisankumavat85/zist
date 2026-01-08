@@ -9,7 +9,7 @@ import {
 import { chats } from "./chats";
 import { timestamps } from "./column-helpers";
 
-const roleEnum = pgEnum("role", ["system", "user", "assistant", "data"]);
+export const roleEnum = pgEnum("role", ["system", "user", "assistant", "data"]);
 
 export const messages = pgTable("messages", {
   id: serial().primaryKey(),

@@ -21,6 +21,7 @@ const PromptInput = () => {
         placeholder="Ask anything about files"
       />
       <div className="flex justify-between items-center">
+        {/* TODO: Remove input and implement menu */}
         <input
           ref={inputRef}
           type="file"
