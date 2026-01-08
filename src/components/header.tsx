@@ -1,19 +1,15 @@
-import { Files } from "lucide-react";
-import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
-import Link from "next/link";
+import { UserButton } from "@clerk/nextjs";
 
 export const Header = () => {
   return (
     <div className="border-b p-4 flex justify-between items-center">
-      <div className="">
+      <div className="flex items-center gap-4">
         <SidebarTrigger variant="outline" />
-        <h3></h3>
+        <h3 className="text-base">JavaScript Promise Polyfill Implementation</h3>
       </div>
-      <div className="">
-        <Button variant="link" asChild>
-          <Link href="/data">Data Sources</Link>
-        </Button>
+      <div className="flex items-center">
+        <UserButton showName />
       </div>
     </div>
   );

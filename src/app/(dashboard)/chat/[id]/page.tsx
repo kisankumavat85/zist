@@ -7,7 +7,7 @@ const ActiveChatPage = async (props: Props) => {
   const { id } = await params;
 
   return (
-    <div className="flex flex-col gap-4 border border-red-300 h-full">
+    <div className="flex flex-col gap-4 h-full">
       <div className="flex-1">
         <h1 className="text-3xl">{id}</h1>
       </div>
