@@ -66,7 +66,7 @@ const DataPage = () => {
       <FileInput />
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">
+          <h2 id="uploaded-files" className="text-2xl font-semibold">
             Uploaded Files ({dummyDataList.length})
           </h2>
           <Button disabled={!fileId}>Use File</Button>

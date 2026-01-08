@@ -1,6 +1,6 @@
 import PromptInput from "@/components/prompt-input";
 
-const ChatPage = () => {
+const ChatPage = async () => {
   return (
     <div className="h-full flex justify-center items-center">
       <div className="flex flex-col w-full h-full justify-center">

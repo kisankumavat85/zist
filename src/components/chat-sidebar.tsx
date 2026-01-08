@@ -21,6 +21,7 @@ import {
 import { ChevronUp, FileText, Plus, User2 } from "lucide-react";
 import clsx from "clsx";
 import { useParams, usePathname } from "next/navigation";
+import { Separator } from "./ui/separator";
 
 const dummyItems = [
   {
@@ -95,23 +96,13 @@ export const ChatSidebar = () => {
         </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User2 /> Kisan
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" className="w-60">
-                <DropdownMenuItem>
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <Separator />
+        <p className="text-center text-sm font-medium">
+          Made with ❤️ by{" "}
+          <Link href="https://kisan8.dev" target="_blank" className="underline">
+            Kisan
+          </Link>
+        </p>
       </SidebarFooter>
     </Sidebar>
   );
