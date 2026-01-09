@@ -82,9 +82,9 @@ export const FileInput = (props: Props) => {
           )}
           onClick={onFileInputClick}
         >
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center gap-1">
             <FileUp />
-            <p>
+            <p className="text-xs">
               {selectedFile && selectedFile.name
                 ? selectedFile.name
                 : "Click here to select file"}
