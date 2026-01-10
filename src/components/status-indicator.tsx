@@ -7,13 +7,16 @@ const statusMap = {
   failed: "Failed",
 };
 
-const statusIndicator = cva(["text-[10px] px-3 py-1 rounded-2xl"], {
+const statusIndicator = cva(["text-xs px-3 py-1 rounded-2xl"], {
   variants: {
     intent: {
-      "in-progress": "text-purple-500 bg-purple-100",
-      completed: "text-green-500 bg-green-100",
-      queued: "text-blue-500 bg-blue-100",
-      failed: "text-red-500 bg-red-100",
+      "in-progress":
+        "text-purple-600 bg-purple-100 dark:text-purple-300 dark:bg-purple-800/30",
+      completed:
+        "text-green-600 bg-green-100 dark:text-green-300 dark:bg-green-800/30",
+      queued:
+        "text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-800/30",
+      failed: "text-red-600 bg-red-100 dark:text-red-300 dark:bg-red-800/30",
     },
   },
 });

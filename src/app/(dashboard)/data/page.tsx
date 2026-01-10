@@ -3,6 +3,7 @@
 import { uploadResource } from "@/actions/resources";
 import { FileInput } from "@/components/file-input";
 import { StatusIndictor } from "@/components/status-indicator";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -51,7 +53,7 @@ const dummyDataList = [
   {
     id: "5",
     fileName: "File 2",
-    type: "TXT",
+    type: "txt",
     date: "14 Dec 2025",
     status: "completed",
   },
@@ -93,7 +95,7 @@ const DataPage = () => {
     formData.append("resource", file);
     const result = await uploadResource(formData);
 
-    console.log('result', result)
+    console.log("result", result);
 
     if (result.success) {
       setFile(null);
@@ -117,16 +119,16 @@ const DataPage = () => {
             disabled={!file || !!fileError || isUploading}
             onClick={() => file && onUploadClick(file)}
           >
-            Upload
+            {isUploading && <Spinner />}Upload
           </Button>
         )}
       />
       <div>
         <div className="mb-4 flex items-center justify-between">
           <h2 id="uploaded-files" className="text-2xl font-semibold">
-            Uploaded Files ({dummyDataList.length})
+            Resource files ({dummyDataList.length})
           </h2>
-          <Button disabled={!selectedFileId}>Use File</Button>
+          <Button disabled={!selectedFileId}>Use resource</Button>
         </div>
         <RadioGroup
           className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-4"
@@ -139,7 +141,9 @@ const DataPage = () => {
                 <CardHeader className="p-0">
                   <CardTitle className="flex gap-1">{item.fileName}</CardTitle>
                   <CardDescription>
-                    <StatusIndictor variant={item.status} />
+                    <p>
+                      <b>Uploaded on:</b> {item.date}
+                    </p>
                   </CardDescription>
                   <CardAction className="flex flex-col items-end gap-2">
                     {item.status === "completed" && (
@@ -151,12 +155,12 @@ const DataPage = () => {
                     )}
                   </CardAction>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="px-0 pt-2">
                   <CardDescription>
-                    <b>File type:</b> {item.type}
-                  </CardDescription>
-                  <CardDescription>
-                    <b>Uploaded on:</b> {item.date}
+                    <div className="flex justify-between">
+                      <StatusIndictor variant={item.status} />
+                      <Badge variant="secondary">{item.type}</Badge>
+                    </div>
                   </CardDescription>
                 </CardContent>
               </Card>
