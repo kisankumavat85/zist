@@ -52,7 +52,7 @@ export const resourceProcess = inngest.createFunction(
       const supabase = await createSupabaseClient();
       const { data: resource, error } = await supabase.storage
         .from(BUCKET_NAME)
-        .download(data.fullPath);
+        .download(data.path);
 
       if (error) throw error;
       if (!resource) throw new Error("Resource file not found");

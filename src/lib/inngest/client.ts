@@ -10,7 +10,7 @@ export const inngest = new Inngest({
     "resource/process": z.object({
       userId: z.string(),
       resourceId: z.number(),
-      fullPath: z.string(),
+      path: z.string(),
     }),
   }),
 });

@@ -46,7 +46,7 @@ export const uploadResource = async (formData: FormData) => {
       name: "resource/process",
       data: {
         userId,
-        fullPath: resource.fileFullPath,
+        path: resource.fileKey,
         resourceId: resource.id,
       },
     });
