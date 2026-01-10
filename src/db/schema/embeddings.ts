@@ -27,3 +27,5 @@ export const embeddings = pgTable(
     ),
   })
 );
+
+export type InsertEmbeddings = typeof embeddings.$inferInsert;
