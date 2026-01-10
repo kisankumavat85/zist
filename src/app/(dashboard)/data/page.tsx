@@ -1,7 +1,6 @@
 "use client";
 
 import { uploadResource } from "@/actions/resources";
-import { FileInput } from "@/components/file-input";
 import { StatusIndictor } from "@/components/status-indicator";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -93,7 +93,7 @@ const DataPage = () => {
     formData.append("resource", file);
     const result = await uploadResource(formData);
 
-    console.log('result', result)
+    console.log("result", result);
 
     if (result.success) {
       setFile(null);
@@ -107,7 +107,7 @@ const DataPage = () => {
 
   return (
     <div className="flex flex-col gap-8 text-purple-500-500">
-      <FileInput
+      {/* <FileInput
         onFileChange={handleFileChange}
         file={file}
         error={fileError}
@@ -120,13 +120,27 @@ const DataPage = () => {
             Upload
           </Button>
         )}
-      />
+      /> */}
       <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id="uploaded-files" className="text-2xl font-semibold">
-            Uploaded Files ({dummyDataList.length})
-          </h2>
-          <Button disabled={!selectedFileId}>Use File</Button>
+        <div className="mb-4 flex justify-between">
+          <div className="">
+            <h2 id="uploaded-files" className="text-2xl font-semibold">
+              Resource Files
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Total: {dummyDataList.length} file(s)
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <Button variant="outline" disabled={!selectedFileId}>
+              Use resource
+            </Button>
+            <Button>
+              <Plus />
+              Upload
+            </Button>
+
+          </div>
         </div>
         <RadioGroup
           className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-4"
