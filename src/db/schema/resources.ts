@@ -12,7 +12,7 @@ export const resources = pgTable("resources", {
   id: serial().primaryKey(),
   userId: text("user_id").notNull(),
   fileName: text("file_name").notNull(),
-  fileUrl: text("file_url").notNull(),
+  fileFullPath: text("file_url").notNull(),
   fileKey: text("file_key").notNull(),
   status: statusEnum("status").default("queued").notNull(),
   ...timestamps,

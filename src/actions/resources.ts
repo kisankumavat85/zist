@@ -4,6 +4,8 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { resources } from "@/db/schema/resources";
 import { createSupabaseClient } from "@/lib/supabase/server";
+import { inngest } from "@/lib/inngest/client";
+import { BUCKET_NAME, FOLDER_NAME } from "@/utils/constants";
 
 export const uploadResource = async (formData: FormData) => {
   try {
@@ -17,17 +19,17 @@ export const uploadResource = async (formData: FormData) => {
       return { success: false, message: "No file provided" };
     }
 
-    const fileName = `${file.name}_${userId}_${new Date()}`;
+    const fileName = `${FOLDER_NAME}/${file.name}_${Date.now()}`;
 
     const supabase = await createSupabaseClient();
     const { data: uploadedFile, error } = await supabase.storage
-      .from("resources")
+      .from(BUCKET_NAME)
       .upload(fileName, file, {
         contentType: file.type,
       });
 
     if (error) {
-      return { success: false, message: "Failed to upload file" };
+      throw error;
     }
 
     const [resource] = await db
@@ -35,10 +37,19 @@ export const uploadResource = async (formData: FormData) => {
       .values({
         fileKey: uploadedFile.path,
         fileName: file.name,
-        fileUrl: uploadedFile.fullPath,
+        fileFullPath: uploadedFile.fullPath,
         userId,
       })
       .returning();
+
+    await inngest.send({
+      name: "resource/process",
+      data: {
+        userId,
+        path: resource.fileKey,
+        resourceId: resource.id,
+      },
+    });
 
     return { success: true, resource };
   } catch (error) {
