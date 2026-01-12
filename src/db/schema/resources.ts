@@ -19,3 +19,4 @@ export const resources = pgTable("resources", {
 });
 
 export type InsertResource = typeof resources.$inferInsert;
+export type SelectResource = typeof resources.$inferSelect;

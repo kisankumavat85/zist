@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "@/lib/supabase/server";
 import { inngest } from "@/lib/inngest/client";
@@ -46,7 +47,7 @@ export const uploadResource = async (formData: FormData) => {
         resourceId: resource.id,
       },
     });
-
+    revalidatePath("/resources");
     return { success: true, resource };
   } catch (error) {
     console.error(error);

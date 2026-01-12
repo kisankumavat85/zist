@@ -1,18 +1,18 @@
 import { cva } from "class-variance-authority";
 
 const statusMap = {
-  completed: "Ready to use",
+  ready: "Ready to use",
   queued: "Queued",
-  "in-progress": "In progress",
+  processing: "Processing",
   failed: "Failed",
 };
 
 const statusIndicator = cva(["text-xs px-3 py-1 rounded-2xl"], {
   variants: {
     intent: {
-      "in-progress":
+      processing:
         "text-purple-600 bg-purple-100 dark:text-purple-300 dark:bg-purple-800/30",
-      completed:
+      ready:
         "text-green-600 bg-green-100 dark:text-green-300 dark:bg-green-800/30",
       queued:
         "text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-800/30",
@@ -22,7 +22,7 @@ const statusIndicator = cva(["text-xs px-3 py-1 rounded-2xl"], {
 });
 
 type Props = {
-  variant: "in-progress" | "completed" | "queued" | "failed";
+  variant: "queued" | "processing" | "ready" | "failed";
 };
 
 export const StatusIndictor = (props: Props) => {
