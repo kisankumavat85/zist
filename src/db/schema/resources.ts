@@ -17,3 +17,5 @@ export const resources = pgTable("resources", {
   status: statusEnum("status").default("queued").notNull(),
   ...timestamps,
 });
+
+export type InsertResource = typeof resources.$inferInsert;

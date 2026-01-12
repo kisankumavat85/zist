@@ -16,10 +16,11 @@ export const messages = pgTable("messages", {
   chatId: uuid("chat_id")
     .references(() => chats.id, { onDelete: "cascade" })
     .notNull(),
-
   role: roleEnum().notNull(),
   content: text(),
   toolInvocations: jsonb("tool_invocations"),
 
   createdAt: timestamps.createdAt,
 });
+
+export type InsertMessage = typeof messages.$inferInsert;
