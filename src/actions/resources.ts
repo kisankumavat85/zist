@@ -1,11 +1,10 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/db";
-import { resources } from "@/db/schema/resources";
 import { createSupabaseClient } from "@/lib/supabase/server";
 import { inngest } from "@/lib/inngest/client";
 import { BUCKET_NAME, FOLDER_NAME } from "@/utils/constants";
+import { insertResource } from "@/db/query/resources";
 
 export const uploadResource = async (formData: FormData) => {
   try {
@@ -32,15 +31,12 @@ export const uploadResource = async (formData: FormData) => {
       throw error;
     }
 
-    const [resource] = await db
-      .insert(resources)
-      .values({
-        fileKey: uploadedFile.path,
-        fileName: file.name,
-        fileFullPath: uploadedFile.fullPath,
-        userId,
-      })
-      .returning();
+    const [resource] = await insertResource({
+      fileKey: uploadedFile.path,
+      fileName: file.name,
+      fileFullPath: uploadedFile.fullPath,
+      userId,
+    });
 
     await inngest.send({
       name: "resource/process",

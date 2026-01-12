@@ -1,5 +1,5 @@
 import { openai } from ".";
-import { embedMany } from "ai";
+import { embed, embedMany } from "ai";
 
 export const generateEmbeddings = async (input: string[]) => {
   const { embeddings } = await embedMany({
@@ -7,4 +7,12 @@ export const generateEmbeddings = async (input: string[]) => {
     values: input,
   });
   return embeddings;
+};
+
+export const generateEmbedding = async (input: string) => {
+  const { embedding } = await embed({
+    model: openai.embedding("text-embedding-3-small"),
+    value: input,
+  });
+  return embedding;
 };
