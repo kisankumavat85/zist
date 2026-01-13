@@ -55,6 +55,7 @@ const ResourceUploader = () => {
       file={file}
       error={fileError}
       maxSize={MAX_FILE_SIZE}
+      accept=".pdf"
       actions={({ file }) => (
         <Button
           disabled={!file || !!fileError || isUploading}

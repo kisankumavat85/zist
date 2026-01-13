@@ -1,6 +1,12 @@
 import PromptInput from "@/components/prompt-input";
+import { selectResource } from "@/db/query/resources";
+import { auth } from "@clerk/nextjs/server";
 
 const ChatPage = async () => {
+  const { userId, redirectToSignIn } = await auth();
+  if (!userId) return redirectToSignIn();
+  const resources = await selectResource({ userId, limit: 5 });
+
   return (
     <div className="h-full flex justify-center items-center">
       <div className="flex flex-col w-full h-full justify-center">
@@ -8,7 +14,7 @@ const ChatPage = async () => {
           <h1 className="text-xl">Hi, Kisan</h1>
           <h1 className="text-3xl font-bold">Ready when you are</h1>
         </div>
-        <PromptInput />
+        <PromptInput initialResources={resources} />
       </div>
     </div>
   );

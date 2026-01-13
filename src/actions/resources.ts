@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "@/lib/supabase/server";
 import { inngest } from "@/lib/inngest/client";
-import { BUCKET_NAME, FOLDER_NAME } from "@/utils/constants";
+import { BUCKET_NAME, FILE_TYPE_MAP, FOLDER_NAME } from "@/utils/constants";
 import { insertResource } from "@/db/query/resources";
 
 export const uploadResource = async (formData: FormData) => {
@@ -33,9 +33,10 @@ export const uploadResource = async (formData: FormData) => {
     }
 
     const [resource] = await insertResource({
-      fileKey: uploadedFile.path,
-      fileName: file.name,
-      fileFullPath: uploadedFile.fullPath,
+      path: uploadedFile.path,
+      name: file.name,
+      type: FILE_TYPE_MAP[file.type as string],
+      fullPath: uploadedFile.fullPath,
       userId,
     });
 
@@ -43,7 +44,7 @@ export const uploadResource = async (formData: FormData) => {
       name: "resource/process",
       data: {
         userId,
-        path: resource.fileKey,
+        path: resource.path,
         resourceId: resource.id,
       },
     });

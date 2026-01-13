@@ -16,6 +16,7 @@ import { StatusIndictor } from "./status-indicator";
 import { Badge } from "./ui/badge";
 import { SelectResource } from "@/db/schema/resources";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 type Props = {
   resources: SelectResource[];
@@ -25,7 +26,7 @@ const ResourcePicker = (props: Props) => {
   const { resources } = props;
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
-  console.log('resources', resources)
+  console.log("resources", resources);
 
   const handleFileSelect = (id: string) => {
     console.log(id);
@@ -37,10 +38,12 @@ const ResourcePicker = (props: Props) => {
         <h2 id="uploaded-files" className="text-2xl font-semibold">
           Resource files ({resources?.length})
         </h2>
-        <Button disabled={!selectedFileId}>Use resource</Button>
+        <Button disabled={!selectedFileId}>
+          <Link href={`/chat?r=${selectedFileId}`}>Use resource</Link>
+        </Button>
       </div>
       <RadioGroup
-        className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-4"
+        className=" gap-4"
         onValueChange={handleFileSelect}
         value={selectedFileId}
       >
@@ -48,12 +51,9 @@ const ResourcePicker = (props: Props) => {
           <Label key={item.id} className="block" htmlFor={item.id + ""}>
             <Card className="p-4 gap-2 shadow-none">
               <CardHeader className="p-0">
-                <CardTitle className="flex gap-1">{item.fileName}</CardTitle>
+                <CardTitle className="flex gap-1">{item.name}</CardTitle>
                 <CardDescription>
-                  <p>
-                    <b>Uploaded on:</b>{" "}
-                    {dayjs(item.createdAt).format("DD mm, YYYY")}
-                  </p>
+                  <p>{dayjs(item.createdAt).format("DD MMM YYYY, hh:mm A")}</p>
                 </CardDescription>
                 <CardAction className="flex flex-col items-end gap-2">
                   {item.status === "ready" && (
@@ -69,7 +69,7 @@ const ResourcePicker = (props: Props) => {
                 <CardDescription>
                   <div className="flex justify-between">
                     <StatusIndictor variant={item.status} />
-                    {/* <Badge variant="secondary">{item.}</Badge> */}
+                    <Badge variant="secondary">{item.type}</Badge>
                   </div>
                 </CardDescription>
               </CardContent>
