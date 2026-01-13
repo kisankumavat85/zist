@@ -11,11 +11,13 @@ export const statusEnum = pgEnum("status", [
 export const resources = pgTable("resources", {
   id: serial().primaryKey(),
   userId: text("user_id").notNull(),
-  fileName: text("file_name").notNull(),
-  fileFullPath: text("file_url").notNull(),
-  fileKey: text("file_key").notNull(),
+  name: text().notNull(),
+  type: text().notNull(),
+  fullPath: text("full_path").notNull(),
+  path: text("path").notNull(),
   status: statusEnum("status").default("queued").notNull(),
   ...timestamps,
 });
 
 export type InsertResource = typeof resources.$inferInsert;
+export type SelectResource = typeof resources.$inferSelect;

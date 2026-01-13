@@ -12,13 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { ChevronUp, FileText, Plus, User2 } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import clsx from "clsx";
 import { useParams, usePathname } from "next/navigation";
 import { Separator } from "./ui/separator";
@@ -40,7 +34,7 @@ const dummyItems = [
 
 const navItems = [
   { title: "New chat", icon: <Plus />, url: "/chat" },
-  { title: "Data source", icon: <FileText />, url: "/data" },
+  { title: "Resources", icon: <FileText />, url: "/resources" },
 ];
 
 export const ChatSidebar = () => {
