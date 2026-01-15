@@ -7,26 +7,16 @@ import ResourcesButton from "./resources-button";
 import { SelectResource } from "@/db/schema";
 import { useEffect, useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { selectResource } from "@/db/query/resources";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Spinner } from "./ui/spinner";
+import { useChat } from "@ai-sdk/react";
+import { createQueryString } from "@/utils/search-params";
+import { toast } from "sonner";
+import { getResources } from "@/actions/resources";
+import { insertChats } from "@/actions/chats";
 
 type Props = {
   initialResources: SelectResource[];
-};
-
-const createQueryString = ({
-  searchParams,
-  name,
-  value,
-}: {
-  searchParams: URLSearchParams;
-  name: string;
-  value: string;
-}) => {
-  const _searchParams = new URLSearchParams(searchParams.toString());
-  _searchParams.set(name, value);
-  return _searchParams.toString();
 };
 
 const PromptInput = (props: Props) => {
@@ -34,11 +24,19 @@ const PromptInput = (props: Props) => {
   const [resource, setResource] = useState<SelectResource | null>(null);
   const [isPending, startTransition] = useTransition();
   const { userId } = useAuth();
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const resourceId = searchParams.get("r");
+  const [prompt, setPrompt] = useState("");
+
+  const { messages, sendMessage } = useChat({
+    onError: (error) => {
+      toast(error.message);
+    },
+  });
+  console.log('messages', messages)
 
   useEffect(() => {
-    const resourceId = searchParams.get("r");
     if (resourceId && userId) {
       const foundResource = initialResources.find(
         (item) => item.id === Number(resourceId)
@@ -47,7 +45,7 @@ const PromptInput = (props: Props) => {
         setResource(foundResource);
       } else {
         startTransition(async () => {
-          const resource = await selectResource({
+          const resource = await getResources({
             userId,
             limit: 1,
             id: Number(resourceId),
@@ -56,7 +54,7 @@ const PromptInput = (props: Props) => {
         });
       }
     }
-  }, [initialResources, searchParams, userId]);
+  }, [initialResources, resourceId, userId]);
 
   const onResourceSelect = (id: number) => {
     if (id) {
@@ -65,8 +63,31 @@ const PromptInput = (props: Props) => {
         name: "r",
         value: String(id),
       });
-      router.push("/chat" + "?" + queryString);
+      const pathname = window.location.pathname;
+      const href = pathname + "?" + queryString;
+
+      router.push(href);
     }
+  };
+
+  const onPromptSubmit = async (prompt: string) => {
+    prompt = prompt.trim();
+
+    if (!resourceId || !userId) return;
+
+    const [chat] = await insertChats([
+      {
+        resourceId: Number(resourceId),
+        title: prompt.slice(0, 40),
+        userId,
+      },
+    ]);
+    const body = {
+      chatId: chat.id,
+      userId,
+      resourceId,
+    };
+    sendMessage({ text: prompt }, { body });
   };
 
   return (
@@ -74,6 +95,7 @@ const PromptInput = (props: Props) => {
       <Textarea
         className="text-2xl resize-none"
         placeholder="Ask anything about files"
+        onChange={(e) => setPrompt(e.target.value)}
       />
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -83,7 +105,11 @@ const PromptInput = (props: Props) => {
           />
           {isPending ? <Spinner /> : resource?.name}
         </div>
-        <Button size="icon">
+        <Button
+          size="icon"
+          disabled={!resourceId || !prompt}
+          onClick={() => onPromptSubmit(prompt)}
+        >
           <Send />
         </Button>
       </div>

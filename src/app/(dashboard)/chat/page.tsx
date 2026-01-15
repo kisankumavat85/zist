@@ -1,11 +1,11 @@
+import { getResources } from "@/actions/resources";
 import PromptInput from "@/components/prompt-input";
-import { selectResource } from "@/db/query/resources";
 import { auth } from "@clerk/nextjs/server";
 
 const ChatPage = async () => {
   const { userId, redirectToSignIn } = await auth();
   if (!userId) return redirectToSignIn();
-  const resources = await selectResource({ userId, limit: 5 });
+  const resources = await getResources({ userId, limit: 5 });
 
   return (
     <div className="h-full flex justify-center items-center">
