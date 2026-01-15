@@ -12,9 +12,9 @@ import {
 import { Button } from "./ui/button";
 import { File, Files, Paperclip, Plus } from "lucide-react";
 import { SelectResource } from "@/db/schema";
-import { selectResource } from "@/db/query/resources";
 import { useAuth } from "@clerk/clerk-react";
 import Link from "next/link";
+import { getResources } from "@/actions/resources";
 
 type Props = {
   initialResources: SelectResource[];
@@ -32,7 +32,7 @@ const ResourcesButton = (props: Props) => {
     setIsOpen(open);
     if (open && initialResources?.length === 0 && userId) {
       startTransition(async () => {
-        const resources = await selectResource({ userId });
+        const resources = await getResources({ userId });
         setResources(resources);
       });
     }

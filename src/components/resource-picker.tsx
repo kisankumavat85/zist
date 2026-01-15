@@ -26,12 +26,10 @@ const ResourcePicker = (props: Props) => {
   const { resources } = props;
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
-  console.log("resources", resources);
-
   const handleFileSelect = (id: string) => {
-    console.log(id);
     setSelectedFileId((prevId) => (prevId === id ? null : id));
   };
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">

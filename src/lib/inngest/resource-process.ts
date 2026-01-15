@@ -7,12 +7,13 @@ import { splitChunks } from "../langchain";
 import { db } from "@/db";
 import { resources } from "@/db/schema/resources";
 import { generateEmbeddings } from "../ai/embedding";
-import { embeddings, InsertEmbeddings } from "@/db/schema/embeddings";
+import { embeddings } from "@/db/schema/embeddings";
 import { BUCKET_NAME } from "@/utils/constants";
+import { sanitizeText } from "@/utils/strings";
 
 export const resourceProcess = inngest.createFunction(
   {
-    id: "resource-process",
+    id: "resource-process-v2",
     retries: 2,
     onFailure: async ({ event, step }) => {
       const resourceId = event.data.event.data.resourceId;
@@ -67,7 +68,9 @@ export const resourceProcess = inngest.createFunction(
       const documents = await splitChunks(chunks);
       if (!documents) throw new Error("Error while splitting chunks");
 
-      return documents.map((item) => item.pageContent);
+      return documents
+        .map((item) => sanitizeText(item.pageContent))
+        .filter((content) => content.length > 8); // Drop chunks with < 8 chars (useless noise);
     });
 
     // Step.3 Generate embeddings
@@ -81,14 +84,14 @@ export const resourceProcess = inngest.createFunction(
 
     // Step.4 Add embeddings to db
     await step.run("add-embeddings-to-db", async () => {
-      const rows = textChunks.map(
-        (chunk, index) =>
-          ({
-            content: chunk,
-            embedding: generatedEmbeddings[index],
-            resourceId: data.resourceId,
-          } as InsertEmbeddings)
-      );
+      const rows = textChunks.map((chunk, index) => {
+        const embedding = generatedEmbeddings[index];
+        return {
+          content: chunk,
+          embedding: embedding,
+          resourceId: data.resourceId,
+        };
+      });
 
       await db.insert(embeddings).values(rows);
     });

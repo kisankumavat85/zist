@@ -38,8 +38,6 @@ const ResourceUploader = () => {
     formData.append("resource", file);
     const result = await uploadResource(formData);
 
-    console.log("result", result);
-
     if (result.success) {
       setFile(null);
       toast.success("File uploaded successfully");

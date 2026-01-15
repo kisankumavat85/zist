@@ -1,5 +1,4 @@
 import { db } from "@/db";
-import { insertMessage } from "@/db/query/messages";
 import { embeddings } from "@/db/schema/embeddings";
 import { openai } from "@/lib/ai";
 import { generateEmbedding } from "@/lib/ai/embedding";
@@ -7,6 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { and, cosineDistance, desc, eq, gt, sql } from "drizzle-orm";
 import { messages as messagesSchema } from "@/db/schema/messages";
+import { insertMessages } from "@/actions/messages";
 
 type Payload = {
   messages: UIMessage[];
@@ -20,7 +20,7 @@ export const POST = async (request: Request) => {
     const { isAuthenticated, userId: _userId } = await auth();
 
     // Step 1: Get user prompt
-    const { messages, chatId, userId, resourceId }: Payload =
+    const { messages, userId, resourceId, chatId }: Payload =
       await request.json();
 
     if (userId !== _userId || !isAuthenticated) {
@@ -34,20 +34,31 @@ export const POST = async (request: Request) => {
       );
     }
 
-    console.log("messages", messages);
-
     // Step 3: Create user message: with chat content tool invocation role and chat id
     const lastMessage = messages[messages.length - 1];
-    const content = lastMessage.parts.join(". "); // NOTE: Check part type in future
+    let userText = "";
 
-    await insertMessage({
-      chatId,
-      role: lastMessage.role,
-      content,
-    });
+    if (lastMessage.role === "user") {
+      const messageText = lastMessage.parts.find((p) => p.type === "text");
+      if (messageText) {
+        userText = messageText.text;
+      }
+    }
+
+    if (userText) {
+      throw new Error("User message not found");
+    }
+
+    await insertMessages([
+      {
+        chatId,
+        role: lastMessage.role,
+        content: userText,
+      },
+    ]);
 
     // Step 4: Create embeddings from user prompt
-    const embedding = await generateEmbedding(content);
+    const embedding = await generateEmbedding(userText);
 
     // Step 5: Search vector DB
     const similarity = sql<number>`1 - (${cosineDistance(
@@ -59,6 +70,8 @@ export const POST = async (request: Request) => {
       .select({
         content: embeddings.content,
         similarity,
+        chunkId: embeddings.id,
+        resourceId: embeddings.resourceId,
       })
       .from(embeddings)
       .where(and(eq(embeddings.resourceId, resourceId), gt(similarity, 0.5))) // Only get result > 50% relevant
@@ -71,16 +84,16 @@ export const POST = async (request: Request) => {
       .join("\n\n---\n\n"); // Separator helps AI distinguish chunks
 
     const systemPrompt = `
-      You are an AI assistant for a document knowledge base.
-
-      START OF CONTEXT BLOCK
-      ${contextBlock}
-      END OF CONTEXT BLOCKa
-
-      Instructions:
-      - Answer the question based *only* on the context block above.
-      - If the answer is not in the context, politely say you don't have that information.
-      - Keep your answer professional and concise.
+    You are an AI assistant for a document knowledge base.
+    
+    START OF CONTEXT BLOCK
+    ${contextBlock}
+    END OF CONTEXT BLOCKa
+    
+    Instructions:
+    - Answer the question based *only* on the context block above.
+    - If the answer is not in the context, politely say you don't have that information.
+    - Keep your answer professional and concise.
     `;
 
     // Step 7: Stream output
@@ -101,6 +114,9 @@ export const POST = async (request: Request) => {
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("Chat error: ", error);
-    throw error;
+    return Response.json({
+      error: true,
+      message: error instanceof Error ? error.message : "Internal Server Error",
+    });
   }
 };
