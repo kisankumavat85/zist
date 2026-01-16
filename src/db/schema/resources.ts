@@ -14,8 +14,9 @@ export const resources = pgTable("resources", {
   name: text().notNull(),
   type: text().notNull(),
   fullPath: text("full_path").notNull(),
-  path: text("path").notNull(),
-  status: statusEnum("status").default("queued").notNull(),
+  path: text().notNull(),
+  summary: text(),
+  status: statusEnum().default("queued").notNull(),
   ...timestamps,
 });
 

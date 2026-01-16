@@ -42,10 +42,11 @@ const ResourcesButton = (props: Props) => {
     <DropdownMenu onOpenChange={handleOpenChange} open={isOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
-          <Paperclip /> Resources
+          <Paperclip />
+          Resources
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" className="max-w-80">
+      <DropdownMenuContent side="top" align="end" className="max-w-80">
         <DropdownMenuLabel>Latest resources</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {isPending ? (

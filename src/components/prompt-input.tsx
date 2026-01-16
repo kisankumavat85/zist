@@ -1,7 +1,7 @@
 "use client";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { Send } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { Card } from "./ui/card";
 import ResourcesButton from "./resources-button";
 import { SelectResource } from "@/db/schema";
@@ -91,9 +91,9 @@ const PromptInput = (props: Props) => {
   };
 
   return (
-    <Card className="w-full p-6 gap-2">
+    <Card className="w-full p-4 gap-4 shadow-none">
       <Textarea
-        className="text-2xl resize-none"
+        className="p-0 text-2xl resize-none border-none shadow-none ring-0 focus-visible:ring-0 dark:bg-transparent"
         placeholder="Ask anything about files"
         onChange={(e) => setPrompt(e.target.value)}
       />
@@ -110,7 +110,7 @@ const PromptInput = (props: Props) => {
           disabled={!resourceId || !prompt}
           onClick={() => onPromptSubmit(prompt)}
         >
-          <Send />
+          <ArrowUp />
         </Button>
       </div>
     </Card>
