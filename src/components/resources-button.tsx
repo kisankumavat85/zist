@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,34 +11,35 @@ import {
 import { Button } from "./ui/button";
 import { File, Files, Paperclip, Plus } from "lucide-react";
 import { SelectResource } from "@/db/schema";
-import { useAuth } from "@clerk/clerk-react";
 import Link from "next/link";
-import { getResources } from "@/actions/resources";
+import { createQueryString } from "@/utils/search-params";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type Props = {
   initialResources: SelectResource[];
-  onSelect: (id: number) => void;
 };
 
 const ResourcesButton = (props: Props) => {
-  const { initialResources, onSelect } = props;
-  const [isOpen, setIsOpen] = useState(false);
-  const [resources, setResources] = useState(initialResources);
-  const [isPending, startTransition] = useTransition();
-  const { userId } = useAuth();
+  const { initialResources = [] } = props;
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    if (open && initialResources?.length === 0 && userId) {
-      startTransition(async () => {
-        const resources = await getResources({ userId });
-        setResources(resources);
+  const onResourceSelect = (id: number) => {
+    if (id) {
+      const queryString = createQueryString({
+        searchParams,
+        name: "r",
+        value: String(id),
       });
+      const pathname = window.location.pathname;
+      const href = pathname + "?" + queryString;
+
+      router.push(href);
     }
   };
 
   return (
-    <DropdownMenu onOpenChange={handleOpenChange} open={isOpen}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
           <Paperclip />
@@ -49,13 +49,11 @@ const ResourcesButton = (props: Props) => {
       <DropdownMenuContent side="top" align="end" className="max-w-80">
         <DropdownMenuLabel>Latest resources</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {isPending ? (
-          <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-        ) : resources?.length ? (
-          resources?.map((resource) => (
+        {initialResources.length ? (
+          initialResources.map((resource) => (
             <DropdownMenuItem
               key={resource.id}
-              onSelect={() => onSelect(resource.id)}
+              onSelect={() => onResourceSelect(resource.id)}
               asChild
             >
               <Link href={`/chat?r=${resource.id}`} className="">

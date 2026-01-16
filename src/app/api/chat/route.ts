@@ -7,6 +7,7 @@ import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { and, cosineDistance, desc, eq, gt, sql } from "drizzle-orm";
 import { messages as messagesSchema } from "@/db/schema/messages";
 import { insertMessages } from "@/actions/messages";
+import { chats } from "@/db/schema";
 
 type Payload = {
   messages: UIMessage[];
@@ -20,32 +21,38 @@ export const POST = async (request: Request) => {
     const { isAuthenticated, userId: _userId } = await auth();
 
     // Step 1: Get user prompt
-    const { messages, userId, resourceId, chatId }: Payload =
-      await request.json();
+    const { messages, userId, chatId }: Payload = await request.json();
 
     if (userId !== _userId || !isAuthenticated) {
       return Response.json({ error: "Unauthenticated" }, { status: 401 });
     }
 
-    if (!chatId || !resourceId) {
+    if (!chatId) {
       return Response.json(
-        { error: "ChatId and resourceId are required" },
+        { error: "chatId and resourceId are required" },
         { status: 400 }
       );
     }
 
+    const [chat] = await db
+      .select({
+        resourceId: chats.resourceId,
+      })
+      .from(chats)
+      .where(eq(chats.id, chatId));
+
     // Step 3: Create user message: with chat content tool invocation role and chat id
     const lastMessage = messages[messages.length - 1];
-    let userText = "";
+    let userMessage = "";
 
     if (lastMessage.role === "user") {
       const messageText = lastMessage.parts.find((p) => p.type === "text");
       if (messageText) {
-        userText = messageText.text;
+        userMessage = messageText.text;
       }
     }
 
-    if (userText) {
+    if (!userMessage) {
       throw new Error("User message not found");
     }
 
@@ -53,12 +60,12 @@ export const POST = async (request: Request) => {
       {
         chatId,
         role: lastMessage.role,
-        content: userText,
+        content: userMessage,
       },
     ]);
 
     // Step 4: Create embeddings from user prompt
-    const embedding = await generateEmbedding(userText);
+    const embedding = await generateEmbedding(userMessage);
 
     // Step 5: Search vector DB
     const similarity = sql<number>`1 - (${cosineDistance(
@@ -74,7 +81,9 @@ export const POST = async (request: Request) => {
         resourceId: embeddings.resourceId,
       })
       .from(embeddings)
-      .where(and(eq(embeddings.resourceId, resourceId), gt(similarity, 0.5))) // Only get result > 50% relevant
+      .where(
+        and(eq(embeddings.resourceId, chat.resourceId), gt(similarity, 0.5))
+      ) // Only get result > 50% relevant
       .orderBy(desc(similarity))
       .limit(4);
 

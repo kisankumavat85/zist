@@ -11,7 +11,8 @@ export const chats = pgTable("chats", {
     })
     .notNull(),
   title: text().notNull(),
-  createdAt: timestamps.createdAt,
+  ...timestamps,
 });
 
 export type InsertChat = typeof chats.$inferInsert;
+export type SelectChat = typeof chats.$inferSelect;

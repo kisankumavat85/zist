@@ -1,12 +1,9 @@
-import { getResources } from "@/actions/resources";
 import ResourcePicker from "@/components/resource-picker";
 import ResourceUploader from "@/components/resource-uploader";
-import { auth } from "@clerk/nextjs/server";
+import { getResources } from "@/db/data/resources";
 
 const ResourcesPage = async () => {
-  const { userId, redirectToSignIn } = await auth();
-  if (!userId) return redirectToSignIn();
-  const resources = await getResources({ userId });
+  const resources = await getResources({});
 
   return (
     <div className="flex flex-col gap-8 text-purple-500-500">

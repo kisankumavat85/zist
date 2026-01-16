@@ -5,9 +5,8 @@ import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "@/lib/supabase/server";
 import { inngest } from "@/lib/inngest/client";
 import { BUCKET_NAME, FILE_TYPE_MAP, FOLDER_NAME } from "@/utils/constants";
-import { InsertResource, resources } from "@/db/schema";
-import { db } from "@/db";
-import { and, desc, eq, ilike } from "drizzle-orm";
+import { getResources, insertResources } from "@/db/data/resources";
+import { cache } from "react";
 
 export const uploadResource = async (formData: FormData) => {
   try {
@@ -45,15 +44,19 @@ export const uploadResource = async (formData: FormData) => {
       },
     ]);
 
-    // FIXME: Later: If event fails resource status should be "failed"
-    await inngest.send({
-      name: "resource/process",
-      data: {
-        userId,
-        path: resource.path,
-        resourceId: resource.id,
-      },
-    });
+    await inngest
+      .send({
+        name: "resource/process",
+        data: {
+          userId,
+          path: resource.path,
+          resourceId: resource.id,
+        },
+      })
+      .catch((reason) => {
+        // FIXME: Later: If event fails to send resource status should be "failed"
+        console.log("reason", reason);
+      });
 
     revalidatePath("/resources");
 
@@ -68,34 +71,6 @@ export const uploadResource = async (formData: FormData) => {
   }
 };
 
-export const insertResources = async (payload: InsertResource[]) => {
-  return await db.insert(resources).values(payload).returning();
-};
-
-type SelectResourceParams = {
-  query?: string;
-  page?: number;
-  type?: string;
-  limit?: number;
-  userId: string;
-  id?: number;
-};
-
-export const getResources = async (params: SelectResourceParams) => {
-  const { id, query, limit = 10, page = 1, type, userId } = params;
-
-  const conditions = [eq(resources.userId, userId)];
-  if (query) conditions.push(ilike(resources.name, query));
-  if (type) conditions.push(eq(resources.type, type));
-  if (id) conditions.push(eq(resources.id, id));
-
-  const offset = (page - 1) * limit;
-
-  return await db
-    .select()
-    .from(resources)
-    .where(and(...conditions))
-    .orderBy(desc(resources.createdAt))
-    .limit(limit)
-    .offset(offset);
-};
+export const getResourceById = cache(async (id: number) => {
+  return (await getResources({ id }))[0];
+});
