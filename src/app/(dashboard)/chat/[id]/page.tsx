@@ -1,8 +1,8 @@
-import { getResources } from "@/db/data/resources";
 import Chat from "./chat";
 import { getChatById } from "@/actions/chats";
 import { redirect } from "next/navigation";
-import { getResourceById } from "@/actions/resources";
+import { getResourceById, getResources } from "@/actions/resources";
+import { getMessages } from "@/actions/messages";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -16,9 +16,15 @@ const ActiveChatPage = async (props: Props) => {
     redirect("/chat");
   }
   const resource = await getResourceById(chat.resourceId);
+  const messages = await getMessages({ chatId });
 
   return (
-    <Chat initialResources={resources} chat={chat} resource={resource} />
+    <Chat
+      initialResources={resources}
+      initialMessages={messages}
+      chat={chat}
+      resource={resource}
+    />
   );
 };
 

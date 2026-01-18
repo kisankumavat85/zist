@@ -29,7 +29,10 @@ const PromptInput = (props: Props) => {
   const onPromptSubmit = async (prompt: string) => {
     prompt = prompt.trim();
 
-    if (!newChat && onSubmit) return onSubmit(prompt);
+    if (!newChat && onSubmit) {
+      setPrompt("");
+      return onSubmit(prompt);
+    }
     if (!resourceId || !userId) return;
 
     const [chat] = await createChats([
@@ -46,7 +49,7 @@ const PromptInput = (props: Props) => {
   };
 
   return (
-    <Card className="w-full p-4 gap-4 shadow-none">
+    <Card className="p-4 gap-4 shadow-none max-w-180 min-w-full">
       <Textarea
         className="p-0 resize-none border-none rounded-none shadow-none ring-0 focus-visible:ring-0 dark:bg-transparent"
         placeholder="Ask anything..."

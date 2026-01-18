@@ -108,8 +108,6 @@ export const resourceProcess = inngest.createFunction(
           .join("\n\n")}`,
       });
 
-      console.log('Summary result -------------------\n', result)
-
       return result.text;
     });
 

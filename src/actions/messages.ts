@@ -1,8 +1,10 @@
 "use server";
 
-import { db } from "@/db";
-import { InsertMessage, messages } from "@/db/schema";
+import { _getMessages, _insertMessages } from "@/db/data/messages";
+import { InsertMessage } from "@/db/schema";
 
-export const insertMessages = async (payload: InsertMessage[]) => {
-  return db.insert(messages).values(payload).returning();
+export const createMessage = async (rows: InsertMessage[]) => {
+  return await _insertMessages(rows);
 };
+
+export const getMessages = _getMessages;

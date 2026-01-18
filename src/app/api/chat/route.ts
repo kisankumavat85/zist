@@ -1,13 +1,12 @@
+import { auth } from "@clerk/nextjs/server";
+import { streamText, UIMessage, convertToModelMessages } from "ai";
+import { and, cosineDistance, desc, eq, gt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { embeddings } from "@/db/schema/embeddings";
 import { openai } from "@/lib/ai";
 import { generateEmbedding } from "@/lib/ai/embedding";
-import { auth } from "@clerk/nextjs/server";
-import { streamText, UIMessage, convertToModelMessages } from "ai";
-import { and, cosineDistance, desc, eq, gt, sql } from "drizzle-orm";
-import { messages as messagesSchema } from "@/db/schema/messages";
-import { insertMessages } from "@/actions/messages";
 import { chats } from "@/db/schema";
+import { createMessage } from "@/actions/messages";
 
 type Payload = {
   messages: UIMessage[];
@@ -56,7 +55,7 @@ export const POST = async (request: Request) => {
       throw new Error("User message not found");
     }
 
-    await insertMessages([
+    await createMessage([
       {
         chatId,
         role: lastMessage.role,
@@ -111,12 +110,14 @@ export const POST = async (request: Request) => {
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
       onFinish: async ({ text, toolCalls }) => {
-        await db.insert(messagesSchema).values({
-          chatId,
-          role: "assistant",
-          content: text,
-          toolInvocations: toolCalls,
-        });
+        await createMessage([
+          {
+            chatId,
+            role: "assistant",
+            content: text,
+            toolInvocations: toolCalls,
+          },
+        ]);
       },
     });
 

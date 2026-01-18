@@ -2,7 +2,6 @@ import "server-only";
 import { and, desc, eq, ilike } from "drizzle-orm";
 import { InsertResource, resources } from "../schema";
 import { db } from "..";
-import { cache } from "react";
 import { auth } from "@clerk/nextjs/server";
 
 type GetResourcesParams = {
@@ -13,7 +12,7 @@ type GetResourcesParams = {
   id?: number;
 };
 
-export const getResources = async (params: GetResourcesParams) => {
+export const _getResources = async (params: GetResourcesParams) => {
   const { userId, redirectToSignIn } = await auth();
   if (!userId) return redirectToSignIn();
 

@@ -1,7 +1,8 @@
 "use client";
 
+import Messages from "@/components/messages";
 import PromptInput from "@/components/prompt-input";
-import { SelectChat, SelectResource } from "@/db/schema";
+import { SelectChat, SelectMessage, SelectResource } from "@/db/schema";
 import { useChat } from "@ai-sdk/react";
 import { useAuth } from "@clerk/nextjs";
 
@@ -9,12 +10,19 @@ type Props = {
   initialResources: SelectResource[];
   chat: SelectChat;
   resource: SelectResource;
+  initialMessages: SelectMessage[];
 };
 
 const Chat = (props: Props) => {
-  const { initialResources, chat, resource } = props;
+  const { initialResources, chat, resource, initialMessages } = props;
   const { userId } = useAuth();
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status } = useChat({
+    messages: initialMessages.map((message) => ({
+      id: String(message.id),
+      role: message.role,
+      parts: [{ type: "text", text: message.content }],
+    })),
+  });
 
   console.log({ messages, status });
 
@@ -25,18 +33,15 @@ const Chat = (props: Props) => {
       resourceId: chat.resourceId,
     };
 
-    console.log("body", body);
     sendMessage({ text: prompt }, { body });
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full">
-      <div className="flex-1 border">
-        <h1 className="text-2xl">{chat.id}</h1>
-        <p>{messages.map((m) => m.parts.map((p) => p.text))}</p>
+    <div className="flex-1 flex flex-col h-full w-full">
+      <div className="flex-1 flex justify-center overflow-y-auto w-full">
+        <Messages messages={messages} />
       </div>
-      <div className="">
-        <div className=""></div>
+      <div className="w-180 self-center">
         <PromptInput
           initialResources={initialResources}
           onSubmit={onPromptSubmit}

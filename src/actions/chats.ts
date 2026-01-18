@@ -1,8 +1,8 @@
 "use server";
 
+import { cache } from "react";
 import { _getChats, insertChats } from "@/db/data/chats";
 import { InsertChat } from "@/db/schema";
-import { cache } from "react";
 
 export const createChats = async (rows: InsertChat[]) => {
   return await insertChats(rows);

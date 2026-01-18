@@ -1,8 +1,8 @@
 import "server-only";
+import { and, desc, eq, ilike } from "drizzle-orm";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { chats, InsertChat } from "@/db/schema";
-import { auth } from "@clerk/nextjs/server";
-import { and, desc, eq, ilike } from "drizzle-orm";
 
 export const insertChats = async (payload: InsertChat[]) => {
   const { userId, redirectToSignIn } = await auth();

@@ -1,12 +1,12 @@
 "use server";
 
+import { cache } from "react";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
+import { _getResources, insertResources } from "@/db/data/resources";
 import { createSupabaseClient } from "@/lib/supabase/server";
 import { inngest } from "@/lib/inngest/client";
 import { BUCKET_NAME, FILE_TYPE_MAP, FOLDER_NAME } from "@/utils/constants";
-import { getResources, insertResources } from "@/db/data/resources";
-import { cache } from "react";
 
 export const uploadResource = async (formData: FormData) => {
   try {
@@ -70,6 +70,8 @@ export const uploadResource = async (formData: FormData) => {
     };
   }
 };
+
+export const getResources = _getResources;
 
 export const getResourceById = cache(async (id: number) => {
   return (await getResources({ id }))[0];
