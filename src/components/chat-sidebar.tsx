@@ -16,21 +16,9 @@ import { FileText, Plus } from "lucide-react";
 import clsx from "clsx";
 import { useParams, usePathname } from "next/navigation";
 import { Separator } from "./ui/separator";
-
-const dummyItems = [
-  {
-    id: "1",
-    title: "How Can I Be Of Assistance?",
-  },
-  {
-    id: "2",
-    title: "JavaScript Promise Polyfill Implementation",
-  },
-  {
-    id: "3",
-    title: "Customer.docx",
-  },
-];
+import { useEffect, useState } from "react";
+import { getChats } from "@/actions/chats";
+import { SelectChat } from "@/db/schema";
 
 const navItems = [
   { title: "New chat", icon: <Plus />, url: "/chat" },
@@ -40,6 +28,17 @@ const navItems = [
 export const ChatSidebar = () => {
   const pathname = usePathname();
   const { id } = useParams();
+  const [chats, setChats] = useState<SelectChat[]>([]);
+
+  useEffect(() => {
+    const getChat = async () => {
+      if (id && !Array.isArray(id)) {
+        const chats = await getChats({});
+        setChats(chats || []);
+      }
+    };
+    getChat();
+  }, [id]);
 
   return (
     <Sidebar>
@@ -73,9 +72,9 @@ export const ChatSidebar = () => {
         <SidebarGroupContent>
           <SidebarGroupLabel className="">Your chats</SidebarGroupLabel>
           <SidebarMenu>
-            {dummyItems.map((item) => (
+            {chats.map((item) => (
               <SidebarMenuItem
-                key={item.title}
+                key={item.id}
                 className={clsx(
                   "text-ellipsis overflow-hidden whitespace-nowrap py-1 px-2 rounded",
                   {

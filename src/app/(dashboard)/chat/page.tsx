@@ -1,21 +1,23 @@
-import { getResources } from "@/actions/resources";
-import PromptInput from "@/components/prompt-input";
-import { auth } from "@clerk/nextjs/server";
+import { getResourceById, getResources } from "@/actions/resources";
+import Chat from "./chat";
 
-const ChatPage = async () => {
-  const { userId, redirectToSignIn } = await auth();
-  if (!userId) return redirectToSignIn();
-  const resources = await getResources({ userId, limit: 5 });
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+const ChatPage = async (props: Props) => {
+  const { searchParams } = props;
+  const { r: resourceId } = await searchParams;
+  const resources = await getResources({ limit: 5 });
+  let selectedResource;
+  if (resourceId) {
+    const resource = await getResourceById(Number(resourceId));
+    selectedResource = resource;
+  }
 
   return (
-    <div className="h-full flex justify-center items-center">
-      <div className="flex flex-col w-full h-full justify-center">
-        <div className="mb-4">
-          <h1 className="text-xl">Hi, Kisan</h1>
-          <h1 className="text-3xl font-bold">Ready when you are</h1>
-        </div>
-        <PromptInput initialResources={resources} />
-      </div>
+    <div className="h-full flex justify-center items-center w-full">
+      <Chat initialResources={resources} selectedResource={selectedResource} />
     </div>
   );
 };

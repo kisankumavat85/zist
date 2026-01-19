@@ -12,9 +12,9 @@ const DashboardLayout = (props: Props) => {
   return (
     <SidebarProvider>
       <ChatSidebar />
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col h-screen overflow-hidden">
         <Header />
-        <main className="flex-1 self-center w-160  py-8">
+        <main className="flex-1 py-4 min-h-0 w-full">
           {children}
         </main>
       </div>

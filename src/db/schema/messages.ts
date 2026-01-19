@@ -9,7 +9,7 @@ import {
 import { chats } from "./chats";
 import { timestamps } from "./column-helpers";
 
-export const roleEnum = pgEnum("role", ["system", "user", "assistant", "data"]);
+export const roleEnum = pgEnum("role", ["system", "user", "assistant"]);
 
 export const messages = pgTable("messages", {
   id: serial().primaryKey(),
@@ -17,10 +17,11 @@ export const messages = pgTable("messages", {
     .references(() => chats.id, { onDelete: "cascade" })
     .notNull(),
   role: roleEnum().notNull(),
-  content: text(),
+  content: text().notNull(),
   toolInvocations: jsonb("tool_invocations"),
 
   createdAt: timestamps.createdAt,
 });
 
 export type InsertMessage = typeof messages.$inferInsert;
+export type SelectMessage = typeof messages.$inferSelect;
