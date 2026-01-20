@@ -63,7 +63,7 @@ export const resourceProcess = inngest.createFunction(
       const arrayBuffer = await resource.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      const chunks = await parsePdf(buffer);
+      const chunks = await parsePdf(arrayBuffer);
       if (!chunks || chunks.length === 0)
         throw new NonRetriableError("Resource file is empty");
 
