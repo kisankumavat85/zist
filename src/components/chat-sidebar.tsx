@@ -32,13 +32,11 @@ export const ChatSidebar = () => {
 
   useEffect(() => {
     const getChat = async () => {
-      if (id && !Array.isArray(id)) {
-        const chats = await getChats({});
-        setChats(chats || []);
-      }
+      const chats = await getChats({ limit: 10 });
+      setChats(chats || []);
     };
     getChat();
-  }, [id]);
+  }, []);
 
   return (
     <Sidebar>

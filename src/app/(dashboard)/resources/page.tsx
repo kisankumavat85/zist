@@ -6,9 +6,11 @@ const ResourcesPage = async () => {
   const resources = await getResources({});
 
   return (
-    <div className="flex flex-col gap-8 w-180">
-      <ResourceUploader />  
-      <ResourcePicker resources={resources} />
+    <div className="flex justify-center overflow-y-auto h-full">
+      <div className="flex flex-col gap-8 w-180">
+        <ResourceUploader />
+        <ResourcePicker resources={resources} />
+      </div>
     </div>
   );
 };

@@ -41,7 +41,7 @@ const ResourcePicker = (props: Props) => {
         </Button>
       </div>
       <RadioGroup
-        className=" gap-4"
+        className="grid grid-cols-2 gap-4"
         onValueChange={handleFileSelect}
         value={selectedFileId}
       >

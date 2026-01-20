@@ -6,18 +6,29 @@ import { FileInput } from "./file-input";
 import { uploadResource } from "@/actions/resources";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Separator } from "./ui/separator";
+import { SelectResource } from "@/db/schema";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
-const ResourceUploader = () => {
+type Props = {
+  onSuccess?: (resource: SelectResource) => void;
+};
+
+const ResourceUploader = (props: Props) => {
+  const { onSuccess } = props;
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+
   const handleFileChange = (file: File | null) => {
     if (!file) {
       setFileError("");
       return;
     }
+
+    setFile(file);
 
     if (file.type !== "application/pdf") {
       setFileError("File type is not PDF");
@@ -28,7 +39,11 @@ const ResourceUploader = () => {
       return;
     }
     setFileError("");
-    setFile(file);
+  };
+
+  const handleFileDelete = () => {
+    setFile(null);
+    setFileError("");
   };
 
   const onUploadClick = async (file: File) => {
@@ -36,33 +51,42 @@ const ResourceUploader = () => {
 
     const formData = new FormData();
     formData.append("resource", file);
-    const result = await uploadResource(formData);
+    const { success, resource, message } = await uploadResource(formData);
 
-    if (result.success) {
+    if (success) {
       setFile(null);
       toast.success("File uploaded successfully");
+      if (onSuccess && resource) onSuccess(resource);
     } else {
-      toast.error(result.message);
+      toast.error(message);
     }
 
     setIsUploading(false);
   };
+
   return (
-    <FileInput
-      onFileChange={handleFileChange}
-      file={file}
-      error={fileError}
-      maxSize={MAX_FILE_SIZE}
-      accept=".pdf"
-      actions={({ file }) => (
+    <Card className="shadow-none">
+      <CardHeader className="p-0">
+        <CardTitle className="px-6 pb-3">Upload File</CardTitle>
+        <Separator />
+      </CardHeader>
+      <CardContent className="px-9 flex flex-col gap-2">
+        <FileInput
+          onFileChange={handleFileChange}
+          file={file}
+          error={fileError}
+          maxSize={MAX_FILE_SIZE}
+          accept="application/pdf"
+          onFileDelete={handleFileDelete}
+        />
         <Button
           disabled={!file || !!fileError || isUploading}
           onClick={() => file && onUploadClick(file)}
         >
           {isUploading && <Spinner />}Upload
         </Button>
-      )}
-    />
+      </CardContent>
+    </Card>
   );
 };
 

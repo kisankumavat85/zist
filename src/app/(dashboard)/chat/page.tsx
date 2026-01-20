@@ -16,7 +16,7 @@ const ChatPage = async (props: Props) => {
   }
 
   return (
-    <div className="h-full flex justify-center items-center w-full">
+    <div className="h-full flex justify-center items-center">
       <Chat initialResources={resources} selectedResource={selectedResource} />
     </div>
   );
