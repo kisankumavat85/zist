@@ -1,14 +1,15 @@
 "use server";
-import { PDFParse, type TypedArray } from "pdf-parse";
+import { extractText, getDocumentProxy } from "unpdf";
 
 export const parsePdf = async (
-  data: string | number[] | ArrayBuffer | TypedArray | undefined
+  data: string | number[] | ArrayBuffer | undefined,
 ) => {
   try {
-    const parser = new PDFParse({ data });
-    const result = await parser.getText();
-    await parser.destroy()
-    return result.text;
+    const pdf = await getDocumentProxy(data);
+    const { text } = await extractText(pdf, {
+      mergePages: true,
+    });
+    return text;
   } catch (error) {
     console.error(error);
   }
