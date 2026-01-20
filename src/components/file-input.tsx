@@ -1,10 +1,8 @@
 "use client";
 
 import clsx from "clsx";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { FileUp, Trash } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Separator } from "./ui/separator";
+import { ChangeEvent, DragEvent } from "react";
+import { CloudUpload, Trash } from "lucide-react";
 import { Button } from "./ui/button";
 import { formatBytes } from "@/utils/file";
 
@@ -16,7 +14,7 @@ type Props = {
   error?: string;
   accept?: string;
   maxSize?: number;
-  actions?: (args: { file: File | null; error?: string }) => React.ReactNode;
+  onFileDelete: () => void;
 };
 
 export const FileInput = (props: Props) => {
@@ -26,85 +24,77 @@ export const FileInput = (props: Props) => {
     error,
     accept,
     maxSize = MAX_FILE_SIZE,
-    actions,
+    onFileDelete,
   } = props;
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(file || null);
-
-  useEffect(() => {
-    setSelectedFile(file);
-  }, [file]);
-
-  const onFileInputClick = () => {
-    if (inputRef.current) {
-      inputRef.current.click();
-    }
-  };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log("e.target.files", e.target.files);
     if (!e.target.files) return;
     const file = e.target.files[0];
-    setSelectedFile(file);
     onFileChange(file);
   };
 
-  const onFileDelete = () => {
-    setSelectedFile(null);
-    onFileChange(null);
-  };
-
-  const fileSize = selectedFile?.size && formatBytes(selectedFile.size);
+  const fileSize = file?.size && formatBytes(file.size);
   const maxFileSize = formatBytes(maxSize);
 
+  const handleOnDrop = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    onFileChange(file);
+  };
+
+  const handleOnDragOver = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+  };
+
   return (
-    <Card className="shadow-none">
-      <CardHeader className="p-0">
-        <CardTitle className="px-6 pb-3">Upload File</CardTitle>
-        <Separator />
-      </CardHeader>
-      <CardContent className="px-9 flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
+      <label
+        id="drag-zone"
+        onDrop={handleOnDrop}
+        onDragOver={handleOnDragOver}
+        htmlFor="file-input"
+        className={clsx(
+          "h-28 flex items-center justify-center border  border-dashed rounded-xl",
+          {
+            "border-secondary-foreground bg-secondary": !error,
+            "border-red-400 bg-red-50 dark:bg-red-900/5": error,
+          }
+        )}
+      >
         <input
-          ref={inputRef}
           type="file"
-          name="file-input"
           id="file-input"
-          className="hidden"
           onChange={handleFileChange}
           accept={accept}
+          hidden
         />
-        <div
-          className={clsx(
-            "h-28 flex items-center justify-center border  border-dashed rounded-xl",
-            {
-              "border-secondary-foreground bg-secondary": !error,
-              "border-red-400 bg-red-50": error,
-            }
-          )}
-          onClick={onFileInputClick}
-        >
-          <div className="flex flex-col items-center gap-1">
-            <FileUp />
-            <p className="text-xs">
-              {selectedFile && selectedFile.name
-                ? selectedFile.name
-                : "Click here to select file"}
+        <div className="flex flex-col items-center gap-1">
+          <CloudUpload />
+          {file && file.name ? (
+            <p>{file.name}</p>
+          ) : (
+            <p>
+              <span className="underline">Browse files</span> or drag and drop
+              file
             </p>
-            <p className="text-[14px]">{fileSize && fileSize}</p>
-          </div>
+          )}
+          <p className="text-[14px]">{fileSize && fileSize}</p>
         </div>
-        <div className="h-8 flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-400">Maximum size: {maxFileSize}</p>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-          {selectedFile && (
-            <Button variant="ghost" onClick={onFileDelete}>
-              <Trash className="text-red-500" />
-            </Button>
+      </label>
+      <div className="h-8 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-400">Maximum size: {maxFileSize}</p>
+          {error && (
+            <p className="text-sm text-red-500 dark:text-red-500/75">{error}</p>
           )}
         </div>
-        {actions && actions({ file, error })}
-      </CardContent>
-    </Card>
+        {file && (
+          <Button variant="ghost" onClick={onFileDelete}>
+            <Trash className="text-red-500 dark:text-red-500/75" />
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };
