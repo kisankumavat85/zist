@@ -1,5 +1,6 @@
 import { UIMessage } from "ai";
 import clsx from "clsx";
+import Markdown from "react-markdown";
 import { ChatSpace } from "./chat-space";
 
 type Props = {
@@ -10,10 +11,7 @@ type Props = {
 const Message = (props: Props) => {
   const { message, isLastUserMessage } = props;
 
-  const messageContent = message.parts
-    .filter((p) => p.type === "text")
-    .map((p) => p.text)
-    .join(". ");
+  const textParts = message.parts.filter((p) => p.type === "text");
 
   const isUser = message.role === "user";
   const id = isUser ? `user-${message.id}` : `assistant-${message.id}`;
@@ -32,7 +30,15 @@ const Message = (props: Props) => {
             "w-full": !isUser,
           })}
         >
-          {messageContent}
+          {textParts.map((part, index) =>
+            isUser ? (
+              <p key={index}>{part.text}</p>
+            ) : (
+              <div key={index} className="prose">
+                <Markdown>{part.text}</Markdown>
+              </div>
+            ),
+          )}
         </div>
       </div>
     </div>
