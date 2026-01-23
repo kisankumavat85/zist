@@ -21,7 +21,7 @@ export const Header = () => {
   }, [chatId]);
 
   return (
-    <div className="sticky top-0 z-10 bg-background border-b p-4 flex justify-between items-center">
+    <div className="sticky top-0 z-10 bg-background border-b p-4 flex justify-between items-center shadow-sm">
       <div className="flex items-center gap-4">
         <SidebarTrigger variant="outline" />
         {chatId && <h3 className="text-base">{title}</h3>}

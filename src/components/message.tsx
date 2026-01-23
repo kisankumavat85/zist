@@ -17,7 +17,7 @@ const Message = (props: Props) => {
   const id = isUser ? `user-${message.id}` : `assistant-${message.id}`;
 
   return (
-    <div id={id} className="mb-4">
+    <div id={id} className="my-2">
       {isLastUserMessage && <ChatSpace />}
       <div
         className={clsx("flex", {
@@ -34,7 +34,7 @@ const Message = (props: Props) => {
             isUser ? (
               <p key={index}>{part.text}</p>
             ) : (
-              <div key={index} className="prose">
+              <div key={index} className="prose dark:prose-invert">
                 <Markdown>{part.text}</Markdown>
               </div>
             ),
