@@ -24,15 +24,15 @@ const Chat = (props: Props) => {
           searchParams,
           name: "r",
           value: resource.id.toString(),
-        })
+        }),
     );
   };
 
   return (
     <div className="flex flex-col gap-4 h-full justify-center w-180">
-      <div className="mb-4">
-        <h1 className="text-4xl font-semibold text-center">
-          Chat with {selectedResource?.name || "Document"}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-center">
+          Get the <code>Zist</code> of it.
         </h1>
       </div>
       {selectedResource ? (
