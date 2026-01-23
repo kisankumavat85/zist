@@ -1,12 +1,20 @@
 "use client";
 
-import Message from "@/components/message";
 import PromptInput from "@/components/prompt-input";
 import { SelectChat, SelectMessage, SelectResource } from "@/db/schema";
 import { useChat } from "@ai-sdk/react";
 import { useAuth } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
+
+const Message = dynamic(() => import("@/components/message"));
+const Loader = dynamic(
+  () => import("lucide-react").then((module) => module.Loader),
+  {
+    loading: () => <p>Loading.......</p>,
+    ssr: false,
+  },
+);
 
 type Props = {
   initialResources: SelectResource[];
