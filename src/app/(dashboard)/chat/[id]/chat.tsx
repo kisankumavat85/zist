@@ -1,11 +1,11 @@
 "use client";
 
-import PromptInput from "@/components/prompt-input";
-import { SelectChat, SelectMessage, SelectResource } from "@/db/schema";
+import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useChat } from "@ai-sdk/react";
 import { useAuth } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import PromptInput from "@/components/prompt-input";
+import { SelectChat, SelectMessage, SelectResource } from "@/db/schema";
 
 const Message = dynamic(() => import("@/components/message"));
 const Loader = dynamic(
@@ -82,18 +82,45 @@ const Chat = (props: Props) => {
     };
   }, []);
 
-  const onPromptSubmit = (prompt: string) => {
-    const body = {
-      chatId: chat.id,
-      userId,
-      resourceId: chat.resourceId,
-    };
+  const onPromptSubmit = useCallback(
+    (prompt: string) => {
+      const body = {
+        chatId: chat.id,
+        userId,
+        resourceId: chat.resourceId,
+      };
 
-    sendMessage({ text: prompt }, { body });
-  };
+      sendMessage({ text: prompt }, { body });
+    },
+    [chat.id, chat.resourceId, sendMessage, userId],
+  );
+
+  useEffect(() => {
+    const prompt = localStorage.getItem("prompt");
+    // If prompt set from /chat page submit the prompt
+    if (prompt) {
+      onPromptSubmit(prompt);
+      localStorage.removeItem("prompt");
+    }
+  }, [onPromptSubmit]);
+
+  useEffect(() => {
+    const lastMessage = messages
+      .filter((message) => message.role === "user")
+      .pop();
+
+    if (!lastMessage) return;
+    const id = `user-${lastMessage.id}`;
+    const element = document.getElementById(id);
+
+    if (!element) return;
+    requestAnimationFrame(() => {
+      element.scrollIntoView();
+    });
+  }, [messages]);
 
   return (
-    <div className="flex-1 flex flex-col h-full w-full" id="scroll-path">
+    <div className="flex-1 flex flex-col h-full w-full">
       <div
         className="flex-1 flex justify-center overflow-y-auto w-full scroll-smooth"
         id="chat-box-2"
@@ -115,7 +142,7 @@ const Chat = (props: Props) => {
         </div>
       </div>
 
-      <div className="w-180 self-center">
+      <div className="w-180 self-center pb-4">
         <PromptInput
           initialResources={initialResources}
           onSubmit={onPromptSubmit}

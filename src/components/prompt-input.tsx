@@ -20,8 +20,7 @@ type Props = {
 };
 
 const PromptInput = (props: Props) => {
-  const { initialResources, resource, newChat, onSubmit, isLoading } =
-    props;
+  const { initialResources, resource, newChat, onSubmit, isLoading } = props;
   const { userId } = useAuth();
   const searchParams = useSearchParams();
   const resourceId = searchParams.get("r") || resource?.id;
@@ -46,7 +45,6 @@ const PromptInput = (props: Props) => {
     ]);
 
     localStorage.setItem("prompt", prompt);
-
     router.push(`/chat/${chat.id}`);
   };
 
