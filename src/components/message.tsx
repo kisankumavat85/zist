@@ -1,33 +1,40 @@
 import { UIMessage } from "ai";
 import clsx from "clsx";
-import { useMemo } from "react";
+import { ChatSpace } from "./chat-space";
 
 type Props = {
   message: UIMessage;
+  isLastUserMessage?: boolean;
 };
 
 const Message = (props: Props) => {
-  const { message } = props;
+  const { message, isLastUserMessage } = props;
 
-  const messageContent = useMemo(
-    () =>
-      message.parts
-        .filter((p) => p.type === "text")
-        .map((p) => p.text)
-        .join(". "),
-    [message.parts]
-  );
+  const messageContent = message.parts
+    .filter((p) => p.type === "text")
+    .map((p) => p.text)
+    .join(". ");
 
-  const isUser = useMemo(() => message.role === "user", [message.role]);
+  const isUser = message.role === "user";
+  const id = isUser ? `user-${message.id}` : `assistant-${message.id}`;
 
   return (
-    <div
-      className={clsx("p-3 rounded-md", {
-        "self-start": !isUser,
-        "self-end bg-accent text-accent-foreground": isUser,
-      })}
-    >
-      {messageContent}
+    <div id={id} className="mb-4">
+      {isLastUserMessage && <ChatSpace />}
+      <div
+        className={clsx("flex", {
+          "justify-end": isUser,
+        })}
+      >
+        <div
+          className={clsx("p-3 rounded-md", {
+            "bg-accent text-accent-foreground max-w-[70%]": isUser,
+            "w-full": !isUser,
+          })}
+        >
+          {messageContent}
+        </div>
+      </div>
     </div>
   );
 };

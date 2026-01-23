@@ -2,7 +2,7 @@
 
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Loader } from "lucide-react";
 import { Card } from "./ui/card";
 import ResourcesButton from "./resources-button";
 import { SelectResource } from "@/db/schema";
@@ -15,11 +15,13 @@ type Props = {
   initialResources: SelectResource[];
   resource?: SelectResource;
   newChat?: boolean;
+  isLoading?: boolean;
   onSubmit?: (prompt: string) => void;
 };
 
 const PromptInput = (props: Props) => {
-  const { initialResources, resource, newChat, onSubmit } = props;
+  const { initialResources, resource, newChat, onSubmit, isLoading } =
+    props;
   const { userId } = useAuth();
   const searchParams = useSearchParams();
   const resourceId = searchParams.get("r") || resource?.id;
@@ -54,6 +56,7 @@ const PromptInput = (props: Props) => {
         className="p-0 resize-none border-none rounded-none shadow-none ring-0 focus-visible:ring-0 dark:bg-transparent"
         placeholder="Ask anything..."
         onChange={(e) => setPrompt(e.target.value)}
+        value={prompt}
       />
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -62,10 +65,10 @@ const PromptInput = (props: Props) => {
         </div>
         <Button
           size="icon"
-          disabled={!resourceId || !prompt}
+          disabled={!resourceId || (!prompt && !isLoading)}
           onClick={() => onPromptSubmit(prompt)}
         >
-          <ArrowUp />
+          {isLoading ? <Loader className="animate-spin" /> : <ArrowUp />}
         </Button>
       </div>
     </Card>

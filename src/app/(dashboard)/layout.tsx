@@ -14,7 +14,7 @@ const DashboardLayout = (props: Props) => {
       <ChatSidebar />
       <div className="w-full flex flex-col h-screen overflow-hidden">
         <Header />
-        <main className="flex-1 py-4 min-h-0 w-full">
+        <main className="flex-1 min-h-0 w-full">
           {children}
         </main>
       </div>
