@@ -120,7 +120,7 @@ const Chat = (props: Props) => {
   }, [messages]);
 
   return (
-    <div className="flex-1 flex flex-col h-full w-full">
+    <div className="flex-1 flex flex-col h-full w-full px-4 lg:px-0">
       <div
         className="flex-1 flex justify-center overflow-y-auto w-full scroll-smooth"
         id="chat-box-2"
@@ -142,7 +142,7 @@ const Chat = (props: Props) => {
         </div>
       </div>
 
-      <div className="w-180 self-center pb-4">
+      <div className="w-full max-w-180 self-center pb-4">
         <PromptInput
           initialResources={initialResources}
           onSubmit={onPromptSubmit}
