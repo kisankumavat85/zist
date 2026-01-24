@@ -49,7 +49,7 @@ const PromptInput = (props: Props) => {
   };
 
   return (
-    <Card className="p-4 gap-4 shadow-none max-w-180 min-w-full">
+    <Card className="p-4 gap-4 shadow-none w-full">
       <Textarea
         className="p-0 resize-none border-none rounded-none shadow-none ring-0 focus-visible:ring-0 dark:bg-transparent"
         placeholder="Ask anything..."
