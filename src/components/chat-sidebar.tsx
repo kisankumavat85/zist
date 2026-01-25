@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "./ui/sidebar";
 import { FileText, Plus } from "lucide-react";
 import clsx from "clsx";
@@ -29,6 +30,7 @@ export const ChatSidebar = () => {
   const pathname = usePathname();
   const { id } = useParams();
   const [chats, setChats] = useState<SelectChat[]>([]);
+  const { isMobile, open, setOpenMobile } = useSidebar();
 
   useEffect(() => {
     const getChat = async () => {
@@ -37,6 +39,11 @@ export const ChatSidebar = () => {
     };
     getChat();
   }, []);
+
+  const handleSidebarMenuButtonClick = () => {
+    if (!isMobile) return;
+    setOpenMobile(!open);
+  };
 
   return (
     <Sidebar>
@@ -56,6 +63,7 @@ export const ChatSidebar = () => {
                     "bg-secondary": pathname === item.url,
                   })}
                   asChild
+                  onClick={handleSidebarMenuButtonClick}
                 >
                   <Link href={item.url}>
                     {item.icon}
@@ -69,18 +77,21 @@ export const ChatSidebar = () => {
 
         <SidebarGroupContent>
           <SidebarGroupLabel className="">Your chats</SidebarGroupLabel>
-          <SidebarMenu>
+          <SidebarMenu className="gap-0">
             {chats.map((item) => (
-              <SidebarMenuItem
-                key={item.id}
-                className={clsx(
-                  "text-ellipsis overflow-hidden whitespace-nowrap py-1 px-2 rounded",
-                  {
-                    "bg-secondary": id === item.id,
-                  }
-                )}
-              >
-                <Link href={`/chat/${item.id}`}>{item.title}</Link>
+              <SidebarMenuItem key={item.id}>
+                <SidebarMenuButton
+                  asChild
+                  className={clsx(
+                    "text-ellipsis overflow-hidden whitespace-nowrap",
+                    {
+                      "bg-accent": id === item.id,
+                    },
+                  )}
+                  onClick={handleSidebarMenuButtonClick}
+                >
+                  <Link href={`/chat/${item.id}`}>{item.title}</Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
