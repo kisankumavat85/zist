@@ -28,7 +28,6 @@ export const FileInput = (props: Props) => {
   } = props;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log("e.target.files", e.target.files);
     if (!e.target.files) return;
     const file = e.target.files[0];
     onFileChange(file);
@@ -59,7 +58,7 @@ export const FileInput = (props: Props) => {
           {
             "border-secondary-foreground bg-secondary": !error,
             "border-red-400 bg-red-50 dark:bg-red-900/5": error,
-          }
+          },
         )}
       >
         <input

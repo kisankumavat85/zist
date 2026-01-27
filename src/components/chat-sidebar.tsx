@@ -17,9 +17,9 @@ import { FileText, Plus } from "lucide-react";
 import clsx from "clsx";
 import { useParams, usePathname } from "next/navigation";
 import { Separator } from "./ui/separator";
-import { useEffect, useState } from "react";
-import { getChats } from "@/actions/chats";
-import { SelectChat } from "@/db/schema";
+import { useChats } from "@/services/chats/hooks";
+import { Suspense } from "react";
+import { Skeleton } from "./ui/skeleton";
 
 const navItems = [
   { title: "New chat", icon: <Plus />, url: "/chat" },
@@ -29,16 +29,8 @@ const navItems = [
 export const ChatSidebar = () => {
   const pathname = usePathname();
   const { id } = useParams();
-  const [chats, setChats] = useState<SelectChat[]>([]);
   const { isMobile, open, setOpenMobile } = useSidebar();
-
-  useEffect(() => {
-    const getChat = async () => {
-      const chats = await getChats({ limit: 10 });
-      setChats(chats || []);
-    };
-    getChat();
-  }, []);
+  const { data: chats = [] } = useChats({});
 
   const handleSidebarMenuButtonClick = () => {
     if (!isMobile) return;
@@ -52,7 +44,6 @@ export const ChatSidebar = () => {
           Zist AI
         </h2>
       </SidebarHeader>
-      {/* <Separator /> */}
       <SidebarContent className="px-2">
         <SidebarGroupContent>
           <SidebarMenu>
@@ -77,24 +68,26 @@ export const ChatSidebar = () => {
 
         <SidebarGroupContent>
           <SidebarGroupLabel className="">Your chats</SidebarGroupLabel>
-          <SidebarMenu className="gap-0">
-            {chats.map((item) => (
-              <SidebarMenuItem key={item.id}>
-                <SidebarMenuButton
-                  asChild
-                  className={clsx(
-                    "text-ellipsis overflow-hidden whitespace-nowrap",
-                    {
-                      "bg-accent": id === item.id,
-                    },
-                  )}
-                  onClick={handleSidebarMenuButtonClick}
-                >
-                  <Link href={`/chat/${item.id}`}>{item.title}</Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+          <Suspense fallback={<ChatsLoader />}>
+            <SidebarMenu className="gap-0">
+              {chats.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    asChild
+                    className={clsx(
+                      "text-ellipsis overflow-hidden whitespace-nowrap",
+                      {
+                        "bg-accent": id === item.id,
+                      },
+                    )}
+                    onClick={handleSidebarMenuButtonClick}
+                  >
+                    <Link href={`/chat/${item.id}`}>{item.title}</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </Suspense>
         </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
@@ -107,5 +100,15 @@ export const ChatSidebar = () => {
         </p>
       </SidebarFooter>
     </Sidebar>
+  );
+};
+
+const ChatsLoader = () => {
+  return (
+    <div className="flex flex-col">
+      {new Array(10).fill("").map((_, index) => (
+        <Skeleton key={index} className="h-4 m-2" />
+      ))}
+    </div>
   );
 };

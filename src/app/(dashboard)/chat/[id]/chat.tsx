@@ -11,7 +11,7 @@ const Message = dynamic(() => import("@/components/message"));
 const Loader = dynamic(
   () => import("lucide-react").then((module) => module.Loader),
   {
-    loading: () => <p>Loading.......</p>,
+    loading: () => <p>Loading...</p>,
     ssr: false,
   },
 );

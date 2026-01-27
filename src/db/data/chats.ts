@@ -11,18 +11,16 @@ export const insertChats = async (payload: InsertChat[]) => {
   return await db.insert(chats).values(payload).returning();
 };
 
-type GetChatsParams = {
+export type GetChatsParams = {
   query?: string;
   page?: number;
   limit?: number;
   id?: string;
+  userId: string;
 };
 
 export const _getChats = async (params: GetChatsParams) => {
-  const { userId, redirectToSignIn } = await auth();
-  if (!userId) return redirectToSignIn();
-
-  const { id, query, limit = 10, page = 1 } = params;
+  const { userId, id, query, limit = 10, page = 1 } = params;
 
   const conditions = [eq(chats.userId, userId)];
   if (query) conditions.push(ilike(chats.title, query));

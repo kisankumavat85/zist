@@ -10,6 +10,8 @@ import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createChats } from "@/actions/chats";
+import { toast } from "sonner";
+import { getQueryClient } from "@/providers";
 
 type Props = {
   initialResources: SelectResource[];
@@ -36,7 +38,7 @@ const PromptInput = (props: Props) => {
     }
     if (!resourceId || !userId) return;
 
-    const [chat] = await createChats([
+    const result = await createChats([
       {
         resourceId: Number(resourceId),
         title: prompt.slice(0, 40) || "Untitled",
@@ -44,8 +46,16 @@ const PromptInput = (props: Props) => {
       },
     ]);
 
-    localStorage.setItem("prompt", prompt);
-    router.push(`/chat/${chat.id}`);
+    if (result.success) {
+      const qc = getQueryClient();
+      qc.invalidateQueries({
+        queryKey: ["sidebar-chats"],
+      });
+      localStorage.setItem("prompt", prompt);
+      router.push(`/chat/${result.chats[0].id}`);
+    } else {
+      toast(result.message);
+    }
   };
 
   return (
