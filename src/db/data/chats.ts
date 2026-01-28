@@ -35,3 +35,26 @@ export const _getChats = async (params: GetChatsParams) => {
     .limit(limit)
     .offset(offset);
 };
+
+type DeleteChatParams = { id: string; userId: string };
+
+export const _deleteChat = async (params: DeleteChatParams) => {
+  const { id, userId } = params;
+  return await db
+    .delete(chats)
+    .where(and(eq(chats.id, id), eq(chats.userId, userId)))
+    .returning();
+};
+
+type UpdateChatParams = { id: string; title: string; userId: string };
+
+export const _updateChatTitle = async (params: UpdateChatParams) => {
+  const { id, title, userId } = params;
+  return await db
+    .update(chats)
+    .set({
+      title,
+    })
+    .where(and(eq(chats.userId, userId), eq(chats.id, id)))
+    .returning();
+};
