@@ -57,10 +57,10 @@ export const ChatSidebar = () => {
 
   return (
     <Sidebar>
-      <SidebarHeader>
-        <h2 className="p-2 text-xl font-extrabold text-center font-mono">
-          Zist AI
-        </h2>
+      <SidebarHeader className="p-4">
+        <span className="font-(family-name:--font-bebas-neue) text-3xl text-center">
+          ZIST AI
+        </span>
       </SidebarHeader>
       <SidebarContent className="px-2">
         <SidebarGroupContent>

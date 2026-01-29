@@ -27,3 +27,52 @@ export const SUMMARY_SYSTEM_PROMPT = `
   **Example Output:**
   "This document serves as a comprehensive guide to the company's 2024 dental and vision benefits, specifically detailing the Cigna DPPO network plans. It outlines coverage limits for preventative care, major restorative services, and orthodontia for employees and their dependents. Additionally, it provides contact information for the benefits concierge service to assist with claims and billing inquiries."
   `;
+
+export const howItWorksSteps = [
+  {
+    title: "Upload",
+    description:
+      "Drag and drop in any PDF—lecture notes, contracts, or manuals. We handle the heavy lifting in the background.",
+  },
+  {
+    title: "Analyze",
+    description:
+      'Our AI scans, cleans, and summarizes your document to understand the "big picture" before you even ask a question.',
+  },
+  {
+    title: "Chat",
+    description:
+      "Ask questions in plain English. Get answers backed by the actual text in your document.",
+  },
+];
+
+export const whyUseThis = [
+  {
+    title: "✨ Instant Smart Summaries",
+    description:
+      "Don't know where to start? Every document gets an automatic, high-level summary the moment it's processed, so you know exactly what the file is about immediately.",
+  },
+  {
+    title: "🧹 Noise-Free Context",
+    description:
+      "Most AI tools get confused by headers, footers, and page numbers. We use advanced text sanitization to ensure the AI reads your content, not the formatting.",
+  },
+  {
+    title: "🧠 Context-Aware Answers",
+    description:
+      "Powered by semantic vector search (text-embedding-3-small), the AI finds the exact paragraph needed to answer your specific questions without hallucinating.",
+  },
+];
+
+export const faq = [
+  {
+    question: "Is this a production app?",
+    answer:
+      "This is a robust open-source demo designed to explore Retrieval Augmented Generation (RAG) architectures. While fully functional, it's built primarily for learning and demonstration purposes.",
+  },
+  {
+    question: "Is my data safe?",
+    answer:
+      "Your files are processed securely. Since this is a demo, we recommend not uploading sensitive personal or financial documents.",
+  },
+];
