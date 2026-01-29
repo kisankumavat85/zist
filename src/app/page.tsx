@@ -42,42 +42,49 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <div className="md:px-24">
-        <div className="flex flex-col items-center gap-4 md:gap-8 p-8 md:p-28">
-          <h1 className="text-3xl md:text-6xl font-bold text-center">
-            Chat with your Documents. Instantly.
-          </h1>
-          <p className="text-center md:text-xl">
-            Transform static PDFs into interactive conversations.
-            <br className="hidden md:inline" />
-            Powered by RAG and OpenAI to help you extract insights, summaries,
-            and answers in seconds.
-          </p>
-          <div className="flex gap-4">
-            <Button asChild>
-              <Link href="/sign-up">Try it Now</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link
-                href="https://github.com/kisankumavat85/zist/"
-                target="_blank"
-              >
-                View on GitHub
-              </Link>
-            </Button>
+      <div className="relative hero-gradient overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="gradient-orb gradient-orb-1" />
+        <div className="gradient-orb gradient-orb-2" />
+        <div className="gradient-orb gradient-orb-3" />
+        
+        <div className="relative z-[1] md:px-24">
+          <div className="flex flex-col items-center gap-4 md:gap-8 p-8 md:p-28">
+            <h1 className="text-3xl md:text-6xl font-bold text-center animate-fade-in">
+              Chat with your Documents. Instantly.
+            </h1>
+            <p className="text-center md:text-xl animate-fade-in animate-delay-100 opacity-0" style={{ animationFillMode: 'forwards' }}>
+              Transform static PDFs into interactive conversations.
+              <br className="hidden md:inline" />
+              Powered by RAG and OpenAI to help you extract insights, summaries,
+              and answers in seconds.
+            </p>
+            <div className="flex gap-4 animate-fade-in animate-delay-200 opacity-0" style={{ animationFillMode: 'forwards' }}>
+              <Button asChild className="btn-glow">
+                <Link href="/sign-up">Try it Now</Link>
+              </Button>
+              <Button variant="outline" asChild className="transition-all duration-300 hover:scale-105">
+                <Link
+                  href="https://github.com/kisankumavat85/zist/"
+                  target="_blank"
+                >
+                  View on GitHub
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
-        <div className="w-full px-4 md:px-20 pt-8 md:pt-0">
-          <div className="relative aspect-video md:aspect-16/6 border rounded md:rounded-2xl overflow-hidden">
-            <Image
-              src="/zist-dashboard.avif"
-              alt="Picture of Zist AI Dashboard"
-              fill
-              style={{
-                objectFit: "cover",
-                objectPosition: "top",
-              }}
-            />
+          <div className="w-full px-4 md:px-20 pt-8 md:pt-0 pb-16 md:pb-24">
+            <div className="relative aspect-video md:aspect-16/6 border rounded md:rounded-2xl overflow-hidden image-glow animate-slide-up animate-delay-300 opacity-0" style={{ animationFillMode: 'forwards' }}>
+              <Image
+                src="/zist-dashboard.avif"
+                alt="Picture of Zist AI Dashboard"
+                fill
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "top",
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -109,10 +116,10 @@ export default function Home() {
               {howItWorksSteps.map((step, i) => (
                 <div
                   key={i}
-                  className="flex flex-col gap-1 md:gap-3 border rounded-xl md:rounded-2xl p-4 md:p-6 bg-background"
+                  className="flex flex-col gap-1 md:gap-3 border rounded-xl md:rounded-2xl p-4 md:p-6 bg-background card-hover"
                 >
                   <div className="flex items-center gap-2">
-                    <Badge className="md:text-sm">Step {i + 1}</Badge>
+                    <Badge className="md:text-sm bg-gradient-to-r from-purple-500 to-blue-500 border-0">Step {i + 1}</Badge>
                     <h3 className="text-lg md:text-xl font-bold">
                       {step.title}
                     </h3>
@@ -126,10 +133,10 @@ export default function Home() {
       </div>
 
       {/* Why Use This? */}
-      <div className="px-4 md:px-24">
+      <div className="px-4 md:px-24 section-gradient">
         <div className="flex flex-col gap-4 md:gap-12 md:px-10">
           <div className="flex flex-col gap-4">
-            <p className="text-xl md:text-2xl text-center">Why Use Zist AI?</p>
+            <p className="text-xl md:text-2xl text-center bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">Why Use Zist AI?</p>
             <h2 className="text-2xl md:text-4xl font-bold text-center">
               Smarter than your average PDF Reader
             </h2>
@@ -138,7 +145,7 @@ export default function Home() {
             {whyUseThis.map((item, i) => (
               <div
                 key={i}
-                className="flex flex-col gap-4 rounded-xl md:rounded-2xl p-4 md:p-8 bg-accent"
+                className="flex flex-col gap-4 rounded-xl md:rounded-2xl p-4 md:p-8 bg-accent card-hover border border-transparent hover:border-purple-500/20"
               >
                 <p className="text-lg md:text-xl font-bold">{item.title}</p>
                 <p>{item.description}</p>
